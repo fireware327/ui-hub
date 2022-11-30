@@ -1,0 +1,393 @@
+local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
+
+local window = kavoUi.CreateLib("Main Title","BloodTheme")
+
+---Tabs
+
+local Tab1 = window:NewTab("Lock")
+
+local Tab1Section = Tab1:NewSection("Script")
+
+local Tab2 = window:NewTab("Keyboard")
+
+local Tab2Section = Tab2:NewSection("Script")
+
+local Tab3 = window:NewTab("Credits")
+
+local Tab3Section = Tab3:NewSection("Made By Fire.#9884")
+
+local Tab3Section = Tab3:NewSection("Others Name")
+
+---Buttons
+
+Tab1Section:NewButton("Lock","Best Lock",function()
+
+getgenv().Prediction =  (  .18  )   -- [ PREDICTION: Lower Prediction: Lower Ping | Higher Prediction: Higher Ping  ]
+
+getgenv().FOV =  (  350  )   -- [ FOV RADIUS: Increases Or Decreases FOV Radius ]
+
+getgenv().AimKey =  (  "c"  )  -- [ TOGGLE KEY: Toggles Silent Aim On And Off ]
+
+getgenv().DontShootThesePeople = {  -- [ WHITELIST: List Of Who NOT To Shoot, edit like this. "Contain quotations with their name and then a semi-colon afterwards for each line" ; ]
+
+	"AimLockPsycho";	"JakeTheMiddleMan";
+
+}
+
+--[[
+
+		Do Not Edit Anything Beyond This Point. 
+
+]]
+
+local SilentAim = true
+
+local LocalPlayer = game:GetService("Players").LocalPlayer
+
+local Players = game:GetService("Players")
+
+local Mouse = LocalPlayer:GetMouse()
+
+local Camera = game:GetService("Workspace").CurrentCamera
+
+local connections = getconnections(game:GetService("LogService").MessageOut)
+
+for _, v in ipairs(connections) do
+
+	v:Disable()
+
+end
+
+getrawmetatable = getrawmetatable
+
+setreadonly = setreadonly
+
+getconnections = getconnections
+
+hookmetamethod = hookmetamethod
+
+getgenv = getgenv
+
+Drawing = Drawing
+
+local FOV_CIRCLE = Drawing.new("Circle")
+
+FOV_CIRCLE.Visible = true
+
+FOV_CIRCLE.Filled = false
+
+FOV_CIRCLE.Thickness = 1
+
+FOV_CIRCLE.Transparency = 1
+
+FOV_CIRCLE.Color = Color3.new(0, 1, 0)
+
+FOV_CIRCLE.Radius = getgenv().FOV
+
+FOV_CIRCLE.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+
+Options = {
+
+	Torso = "HumanoidRootPart";
+
+	Head = "Head";
+
+}
+
+local function MoveFovCircle()
+
+	pcall(function()
+
+		local DoIt = true
+
+		spawn(function()
+
+			while DoIt do task.wait()
+
+				FOV_CIRCLE.Position = Vector2.new(Mouse.X, (Mouse.Y + 36))
+
+			end
+
+		end)
+
+	end)
+
+end coroutine.wrap(MoveFovCircle)()
+
+Mouse.KeyDown:Connect(function(KeyPressed)
+
+	if KeyPressed == (getgenv().AimKey:lower()) then
+
+		if SilentAim == false then
+
+			FOV_CIRCLE.Color = Color3.new(0, 1, 0)
+
+			SilentAim = true
+
+		elseif SilentAim == true then
+
+			FOV_CIRCLE.Color = Color3.new(1, 0, 0)
+
+			SilentAim = false
+
+		end
+
+	end
+
+end)
+
+Mouse.KeyDown:Connect(function(Rejoin)
+
+	if Rejoin == "=" then
+
+		local LocalPlayer = game:GetService("Players").LocalPlayer
+
+		game:GetService("TeleportService"):Teleport(game.PlaceId, LocalPlayer)
+
+	end
+
+end)
+
+local oldIndex = nil
+
+oldIndex = hookmetamethod(game, "__index", function(self, Index, Screw)
+
+	local Screw = oldIndex(self, Index)
+
+	local kalk = Mouse
+
+	local cc = "hit"
+
+	local gboost = cc
+
+	if self == kalk and (Index:lower() == gboost) then
+
+		local Distance = 9e9
+
+		local Target = nil
+
+		local Players = game:GetService("Players")
+
+		local LocalPlayer = game:GetService("Players").LocalPlayer
+
+		local Camera = game:GetService("Workspace").CurrentCamera
+
+		for _, v in pairs(Players:GetPlayers()) do 
+
+			if not table.find(getgenv().DontShootThesePeople, v.Name) then
+
+				if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("Humanoid") and v.Character:FindFirstChild("Humanoid").Health > 0 then
+
+					local Enemy = v.Character	
+
+					local CastingFrom = CFrame.new(Camera.CFrame.Position, Enemy[Options.Torso].CFrame.Position) * CFrame.new(0, 0, -4)
+
+					local RayCast = Ray.new(CastingFrom.Position, CastingFrom.LookVector * 9000)
+
+					local World, ToSpace = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(RayCast, {LocalPlayer.Character:FindFirstChild("Head")})
+
+					local RootWorld = (Enemy[Options.Torso].CFrame.Position - ToSpace).magnitude
+
+					if RootWorld < 4 then		
+
+						local RootPartPosition, Visible = Camera:WorldToScreenPoint(Enemy[Options.Torso].Position)
+
+						if Visible then
+
+							local Real_Magnitude = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(RootPartPosition.X, RootPartPosition.Y)).Magnitude
+
+							if Real_Magnitude < Distance and Real_Magnitude < FOV_CIRCLE.Radius then
+
+								Distance = Real_Magnitude
+
+								Target = Enemy
+
+							end
+
+						end
+
+					end
+
+				end
+
+			end
+
+		end
+
+		if Target ~= nil and Target[Options.Torso] and Target:FindFirstChild("Humanoid") and Target:FindFirstChild("Humanoid").Health > 0 then
+
+			local Madox = Target[Options.Torso]
+
+			local Formulate = Madox.CFrame + (Madox.AssemblyLinearVelocity * getgenv().Prediction + Vector3.new(0,-1,0))	
+
+			return (Index:lower() == gboost and Formulate)
+
+		end
+
+		return Screw
+
+	end
+
+	return oldIndex(self, Index, Screw)
+
+end)
+
+--Farewell Atman, Nosss, Toru.
+
+end)
+
+Tab1Section:NewButton("Lock2.0","2.0 Lock",function()
+
+_G.TargetAim = {
+
+    ["Key"] = "q",
+
+    ["Mode"] = "Toggle", -- "Toggle" or "Hold"
+
+    ["Prediction"] = 0.12831, -- Lower if Lower Ping, Higher if Higher Ping
+
+    ["Auto-Prediction"] = false,
+
+    ["Aimpart"] = "HumanoidRootPart",
+
+    ["Face-Target"] = false,
+
+    ["Notif-Toggle"] = false,
+
+    ["Chat-Toggle"] = false,
+
+    ["View-Toggle"] = false,
+
+    ["Resolver-V1"] = false,
+
+    ["Resolver-Delay"] = 0.195,
+
+    ["Resolver-Aimpart"] = "HumanoidRootPart",
+
+    ["Resolver-AntiSky"] = true,
+
+    ["Resolver-AntiGround"] = true,
+
+    ["Resolver-Reverse"] = false,
+
+    ["Orbit-Toggle"] = false,
+
+    ["Orbit-Speed"] = 8,
+
+    ["Orbit-Size"] = 8,
+
+    ["Orbit-Height"] = 0, -- No Negatives
+
+    ["Vertical-Velocity-Toggle"] = false,
+
+    ["Vertical-Velocity"] = 0,
+
+    ["Horizontal-Velocity-Toggle"] = false,
+
+    ["Horizontal-Velocity"] = 0,
+
+    ["Onshot-Visual"] = false,
+
+    ["Onshot-Visual-Color"] = Color3.fromRGB(119,0,255),
+
+    ["Onshot-Visual-Material"] = "ForceField", -- "Plastic", "ForceField", "Neon"
+
+    ["Onshot-Visual-Life"] = 1, -- Seconds
+
+    ["Onshot-Sound"] = false,
+
+    ["Onshot-Sound-Sound"] = 12413331,
+
+    ["Check-For-Part"] = "HumanoidRootPart",
+
+    ["FOV-Check"] = true,
+
+    ["FOV-Check-Color"] = Color3.fromRGB(119,0,255),
+
+    ["FOV-Size"] = 100,
+
+    ["Circle-Thickness"] = 2, 
+
+    ["Filled-Circle"] = false,
+
+    ["Circle-Transparency"] = 1, --Invisible
+
+    ["Visible-Check"] = false,
+
+    ["Down-Check"] = false, -- For Hood Customs and Untitled Hood
+
+    ["Dot"] = true,
+
+    ["Dot-Color"] = Color3.fromRGB(119,0,255),
+
+    ["Tracer"] = false,
+
+    ["Tracer-Color"] = Color3.fromRGB(119,0,255),
+
+    ["Highlight"] = false,
+
+    ["Highlight-Color"] = Color3.fromRGB(119,0,255),
+
+}
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/nyulachan/nyula/main/Standalones/SilentAim", true))()
+
+end)
+
+Tab1Section:NewButton("Fly","Fe fly",function()
+
+loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\103\105\115\116\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\109\101\111\122\111\110\101\89\84\47\98\102\48\51\55\100\102\102\57\102\48\97\55\48\48\49\55\51\48\52\100\100\100\54\55\102\100\99\100\51\55\48\47\114\97\119\47\101\49\52\101\55\52\102\52\50\53\98\48\54\48\100\102\53\50\51\51\52\51\99\102\51\48\98\55\56\55\48\55\52\101\98\51\99\53\100\50\47\97\114\99\101\117\115\37\50\53\50\48\120\37\50\53\50\48\102\108\121\37\50\53\50\48\50\37\50\53\50\48\111\98\102\108\117\99\97\116\111\114\39\41\44\116\114\117\101\41\41\40\41\10\10")()
+
+end)
+
+Tab1Section:NewButton("Bedwars Vape","Fe vape",function()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/NewMainScript.lua", true))()
+
+local InfiniteJumpEnabled = true
+
+game:GetService("UserInputService").JumpRequest:connect(function()
+
+	if InfiniteJumpEnabled then
+
+		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+
+	end
+
+end)
+
+game.StarterGui:SetCore("SendNotification", {
+
+    Title = "Infinite Jumps and Vape";
+
+    Text = "Mixed by JN HH Gaming"; -- what the text says (ofc)
+
+    Duration = 30;
+
+})
+
+wait(1)
+
+game.StarterGui:SetCore("SendNotification", {
+
+    Title = "Enjoy";
+
+    Text = "Don't Forget to Subscribe JN HH Gaming"; -- what the text says (ofc)
+
+    Duration = 30;
+
+})
+
+end)
+
+Tab1Section:NewButton("Bedwars speed","lol",function()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/JNHHGaming/JN-HH-Gaming-1-Click/main/JN%20HH%20Gaming%201%20Click",true))()
+
+end)
+
+Tab2Section:NewButton("Keyboard","Pc Like Keyboard",function()
+
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/manimcool21/Keyboard-FE/main/Protected%20(3).lua'),true))()
+
+end)
